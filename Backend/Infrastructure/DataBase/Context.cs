@@ -7,6 +7,6 @@ public class Context : DbContext
     public Context(DbContextOptions<Context> options) : base(options) { }
 
     public DbSet<Price> Prices { get; set; }
-    public DbSet<Vehicle> Vehicles { get; set; }
+    public DbSet<Parking> Parkings { get; set; }
 
 }

@@ -9,24 +9,23 @@ public class Utils
         return Math.Abs(Math.Round(LenghtOfStay.TotalMinutes, 2));
     }
 
-    public decimal CalculateAmountToPay(double lenghtOfStay, Price price)
+    public decimal CalculateAmountToPay(double lengthOfStay, Price price)
     {
-        decimal amount = 0;
-
-        if (lenghtOfStay <= 30)
+        if (lengthOfStay <= 30)
         {
-            return amount = price.InitialTimeValue / 2;
+            return price.InitialTimeValue / 2;
         }
         else
         {
-            double tolerance = Math.Ceiling(lenghtOfStay - price.InitialTime);
-            if (tolerance > 10)
+            decimal valueToPay = (decimal)lengthOfStay * price.InitialTimeValue / (decimal)price.InitialTime;
+            double toleranceInMinutes = Math.Abs(price.InitialTime - lengthOfStay);
+            if (toleranceInMinutes > 10)
             {
-                return amount = price.InitialTimeValue + price.AdditionalHourlyValue;
+                return Math.Round(valueToPay + price.AdditionalHourlyValue,2);
             }
             else
             {
-                return price.InitialTimeValue;
+                return Math.Round(valueToPay,2);
             }
         }
     }

@@ -1,12 +1,13 @@
 ﻿using DesafioBenner.Repositories.Interfaces;
 using DesafioBenner.Services.Interfaces;
 using Infrastructure.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace DesafioBenner.Services
 {
     public class PriceService : IPriceService
     {
-        public readonly IPriceRepository _repository; 
+        public readonly IPriceRepository _repository;
 
         public PriceService(IPriceRepository repository)
         {
@@ -15,7 +16,20 @@ namespace DesafioBenner.Services
 
         public async Task<List<Price>> GetAllAsync()
         {
-           return await _repository.GetAllAsync();
+            return await _repository.GetAllAsync();
+        }
+
+        public async Task<bool> GetPriceIsValid(DateTime entryDate)
+        {
+            Price validPrice = await _repository.GetDbSet().FirstOrDefaultAsync(pr => pr.InitialDate <= entryDate && pr.FinalDate >= entryDate && pr.DeleteDate == null);
+            if (validPrice != null)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         public async Task<Price> GetByIdAsync(long id)

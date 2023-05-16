@@ -4,9 +4,9 @@ using Infrastructure.Entities;
 
 namespace DesafioBenner.Repositories
 {
-    public class VehicleRepository : BaseRepository<Vehicle>, IVehicleRepository
+    public class ParkingRepository : BaseRepository<Parking>, IParkingRepository
     {
-        public VehicleRepository(Context context) : base(context)
+        public ParkingRepository(Context context) : base(context)
         {
         }
     }

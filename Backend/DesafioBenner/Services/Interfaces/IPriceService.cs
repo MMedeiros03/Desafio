@@ -6,7 +6,9 @@ public interface IPriceService
 {
     Task<List<Price>> GetAllAsync();
 
-    Task<Price> GetByIdAsync(long id);
+    Task<Price> GetByIdAsync(long id); 
+
+    Task<bool> GetPriceIsValid(DateTime entryDate);
 
     Task<Price> PostAsync(Price entity);
 

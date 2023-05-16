@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 namespace Infrastructure.Entities;
 
-public class Vehicle : Base
+public class Parking : Base
 {
     [Required]
     public DateTime EntryDate { get; set; }
@@ -9,6 +9,7 @@ public class Vehicle : Base
     public string LicensePlate { get; set; }
     public DateTime? DepartureDate { get; set; }
     public string Model { get; set; }
+    public decimal? AmountCharged { get; set; }
     public string Brand { get; set; }
     public string Color { get; set; }
 }

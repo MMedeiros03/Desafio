@@ -19,11 +19,11 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Injection Dependencies Services
-builder.Services.AddTransient<IVehicleService, VehicleService>();
+builder.Services.AddTransient<IParkingService, ParkingService>();
 builder.Services.AddTransient<IPriceService, PriceService>();
 
 // Injection Dependencies Repositories
-builder.Services.AddTransient<IVehicleRepository, VehicleRepository>();
+builder.Services.AddTransient<IParkingRepository, ParkingRepository>();
 builder.Services.AddTransient<IPriceRepository, PriceRepository>();
 
 builder.Services.AddTransient<Utils>();
