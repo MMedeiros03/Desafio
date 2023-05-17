@@ -9,6 +9,14 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddCors(options => options.AddPolicy("MyPolicy", policy =>
+{
+    policy.WithOrigins("http://localhost:3000")
+    .AllowAnyMethod()
+    .AllowAnyHeader()
+    .AllowCredentials();
+}));
+
 // Add services to the container.
 
 builder.Services.Configure<ConnectionDataBaseDTO>(builder.Configuration.GetSection("ConnectionStrings"));
@@ -47,7 +55,7 @@ using (IServiceScope scope = app.Services.CreateScope())
     context.Database.EnsureCreated();
 }
 
-app.UseCors("CorsPolicy");
+app.UseCors("MyPolicy");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

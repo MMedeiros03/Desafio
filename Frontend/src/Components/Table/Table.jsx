@@ -2,7 +2,8 @@
 /* eslint-disable react/prop-types */
 import { Table } from 'antd';
 import React, { useState } from 'react';
-
+import dayjs from 'dayjs';
+import { api } from '../../Services/HttpHandler';
 import ModalCreateAndUpdateParking from '../Modal/Modal';
 
 export default function TableListParkin({ contentList }) {
@@ -12,12 +13,13 @@ export default function TableListParkin({ contentList }) {
   const getAllParking = () => {
     const listObjects = [];
     contentList?.forEach((element) => {
-      console.log(element);
       listObjects.push({
         key: element.id,
         licenseplate: element?.licensePlate,
-        entryDate: element?.entryDate,
-        departureDate: element?.departureDate,
+        entryDate: dayjs(element?.entryDate).format('DD/MM/YYYY'),
+        departureDate: element?.departureDate
+          ? dayjs(element?.departureDate).format('DD/MM/YYYY')
+          : '',
         lenghOfStay: element?.lenghOfStay,
         chargedTime: element?.chargedTime,
         price: element?.price,
@@ -25,6 +27,21 @@ export default function TableListParkin({ contentList }) {
       });
     });
     return listObjects;
+  };
+
+  const getParkingById = async (id) => {
+    await api
+      .get(`api/Parking?id=${id}`)
+      .then(({ data }) => {
+        setUpdateParking({
+          ...data,
+          entryDate: data?.entryDate ? dayjs(data?.entryDate) : '',
+          departureDate: data?.departureDate ? dayjs(data?.departureDate) : '',
+        });
+      })
+      .catch((e) => {
+        console.log(e);
+      });
   };
 
   const columns = [
@@ -71,7 +88,7 @@ export default function TableListParkin({ contentList }) {
         pagination={false}
         onRow={(e) => ({
           onDoubleClick: async () => {
-            setUpdateParking(e.key);
+            getParkingById(e.key);
             setOpenUpdateModal(true);
           },
         })}
@@ -81,7 +98,7 @@ export default function TableListParkin({ contentList }) {
       <ModalCreateAndUpdateParking
         open={openUpdateModal}
         setOpenModal={setOpenUpdateModal}
-        UpdateIdParking={UpdateParking}
+        UpdateParking={UpdateParking}
       />
     </>
   );
