@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import React from 'react';
 import { ConfigProvider, theme } from 'antd';
 import ptBR from 'antd/es/locale/pt_BR';
