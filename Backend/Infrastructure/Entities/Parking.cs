@@ -8,8 +8,9 @@ public class Parking : Base
     [Required]
     public string LicensePlate { get; set; }
     public DateTime? DepartureDate { get; set; }
-    public string Model { get; set; }
+    public TimeSpan? LenghOfStay { get; set; }
+    public decimal? PriceCharged { get; set; }
+    public decimal? ChargedTime { get; set; }
     public decimal? AmountCharged { get; set; }
-    public string Brand { get; set; }
-    public string Color { get; set; }
+
 }

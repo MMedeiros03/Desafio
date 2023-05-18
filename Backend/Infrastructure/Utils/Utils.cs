@@ -30,4 +30,16 @@ public class Utils
         }
     }
 
+    public decimal ValidateLenghOfStay(TimeSpan time)
+    {
+        if(time.Hours == 0 && time.Minutes >= 1)
+        {
+            return 30;
+        }
+        else
+        {
+            return time.Hours;
+        }
+    }
+
 }

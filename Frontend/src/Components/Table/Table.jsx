@@ -1,12 +1,16 @@
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react/prop-types */
 import { Table } from 'antd';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import dayjs from 'dayjs';
 import { api } from '../../Services/HttpHandler';
-import ModalCreateAndUpdateParking from '../Modal/Modal';
+import ModalCreateAndUpdateParking from '../Modal/ModalCreateAndUpdateParking';
 
-export default function TableListParkin({ contentList }) {
+export default function TableListParking({
+  contentList,
+  setUpdateTable,
+  UpdateTable,
+}) {
   const [openUpdateModal, setOpenUpdateModal] = useState(false);
   const [UpdateParking, setUpdateParking] = useState();
 
@@ -14,15 +18,17 @@ export default function TableListParkin({ contentList }) {
     const listObjects = [];
     contentList?.forEach((element) => {
       listObjects.push({
-        key: element.id,
+        key: element?.id,
         licenseplate: element?.licensePlate,
-        entryDate: dayjs(element?.entryDate).format('DD/MM/YYYY'),
+        entryDate: element?.entryDate
+          ? dayjs(element?.entryDate).format('DD-MM-YYYY HH:mm:ss')
+          : '',
         departureDate: element?.departureDate
-          ? dayjs(element?.departureDate).format('DD/MM/YYYY')
+          ? dayjs(element?.departureDate).format('DD-MM-YYYY HH:mm:ss')
           : '',
         lenghOfStay: element?.lenghOfStay,
         chargedTime: element?.chargedTime,
-        price: element?.price,
+        priceCharged: element?.priceCharged,
         amountToPay: element?.amountCharged,
       });
     });
@@ -72,8 +78,8 @@ export default function TableListParkin({ contentList }) {
     },
     {
       title: 'Price',
-      dataIndex: 'price',
-      key: 'price',
+      dataIndex: 'priceCharged',
+      key: 'priceCharged',
     },
     {
       title: 'AmountToPay',
@@ -81,6 +87,10 @@ export default function TableListParkin({ contentList }) {
       key: 'amountToPay',
     },
   ];
+
+  useEffect(() => {
+    getAllParking();
+  }, []);
 
   return (
     <>
@@ -99,6 +109,8 @@ export default function TableListParkin({ contentList }) {
         open={openUpdateModal}
         setOpenModal={setOpenUpdateModal}
         UpdateParking={UpdateParking}
+        setUpdateTable={setUpdateTable}
+        UpdateTable={UpdateTable}
       />
     </>
   );

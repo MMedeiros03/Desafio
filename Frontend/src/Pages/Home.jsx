@@ -1,22 +1,27 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import React, { useEffect, useState } from 'react';
 import { Button } from 'antd';
-import ModalCreateAndUpdateParking from '../Components/Modal/Modal';
-import TableListParkin from '../Components/Table/Table';
+import ModalCreateAndUpdateParking from '../Components/Modal/ModalCreateAndUpdateParking';
+import TableListParking from '../Components/Table/Table';
 import { api } from '../Services/HttpHandler';
+import ModalCreateAndUpdatePrice from '../Components/Modal/ModalCreateAndUpdatePrice';
 
 export default function Home() {
-  const [openModal, setOpenModal] = useState(false);
-  const [openModalCreate, setOpenModalCreate] = useState();
+  const [openModalPrice, setOpenModalPrice] = useState(false);
+  const [openModalParking, setOpenModalParking] = useState(false);
   const [dataSource, setDataSource] = useState([]);
+  const [updateTable, setUpdateTable] = useState(false);
 
-  const showModal = (createParking) => {
+  const showModalParking = (createParking) => {
     if (createParking) {
-      setOpenModalCreate(true);
+      setOpenModalParking(true);
     } else {
-      setOpenModalCreate(false);
+      setOpenModalParking(false);
     }
-    setOpenModal(true);
+  };
+
+  const showModalPrice = () => {
+    setOpenModalPrice(true);
   };
 
   const getAllParking = async () => {
@@ -32,20 +37,34 @@ export default function Home() {
 
   useEffect(() => {
     getAllParking();
-  }, []);
+  }, [updateTable]);
 
   return (
     <div className="ContentMain">
-      <Button type="primary" onClick={() => showModal(true)}>
+      <Button type="primary" onClick={() => showModalParking(true)}>
         Registrar entrada
       </Button>
 
+      <Button type="primary" onClick={() => showModalPrice()}>
+        Registrar Valores do Estacionamento
+      </Button>
+
       <ModalCreateAndUpdateParking
-        modalCreate={openModalCreate}
-        open={openModal}
-        setOpenModal={setOpenModal}
+        open={openModalParking}
+        setOpenModal={setOpenModalParking}
+        UpdateTable={updateTable}
+        setUpdateTable={setUpdateTable}
       />
-      <TableListParkin contentList={dataSource} />
+
+      <ModalCreateAndUpdatePrice
+        open={openModalPrice}
+        setOpenModal={setOpenModalPrice}
+      />
+      <TableListParking
+        contentList={dataSource}
+        UpdateTable={updateTable}
+        setUpdateTable={setUpdateTable}
+      />
     </div>
   );
 }

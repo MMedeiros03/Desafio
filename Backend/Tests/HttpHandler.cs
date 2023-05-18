@@ -3,7 +3,7 @@ using System.Text.Json;
 
 public static class HttpHandler
 {
-    private static readonly string baseUrl = "http://localhost:7283/api/";
+    private static readonly string baseUrl = "https://localhost:7222/api/";
 
     public static async Task<HttpResponseMessage> SendRequest<TRequest>(string endpoint, TRequest request, string methodType)
     {

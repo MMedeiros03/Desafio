@@ -2,43 +2,40 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable import/no-extraneous-dependencies */
 import React, { useState } from 'react';
-import {
-  Modal,
-  Form,
-  Row,
-  Input,
-  DatePicker,
-  TimePicker,
-  Button,
-  Col,
-} from 'antd';
+import { Modal, Form, Row, Input, DatePicker, Button, Col } from 'antd';
+import dayjs from 'dayjs';
+import locale from 'antd/es/date-picker/locale/pt_BR';
+
 import { api } from '../../Services/HttpHandler';
 
 export default function ModalCreateAndUpdateParking({
   open,
   setOpenModal,
-  UpdateParking,
+  setUpdateTable,
+  UpdateTable,
+  UpdateParking = false,
 }) {
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
 
-  const deleteParking = async (id) => {
+  const deleteParking = async () => {
+    const { id } = UpdateParking;
     await api
       .delete(`api/Parking?id=${id}`)
       .then(({ data }) => {
-        console.log(data);
+        setUpdateTable(!UpdateTable);
+        setOpenModal(false);
       })
       .catch((e) => {
         console.log(e);
       });
   };
-  console.log(UpdateParking);
   form.setFieldsValue(UpdateParking);
 
   const onFinish = async (values) => {
     setLoading(true);
     const objectCreateParking = {
-      entryDate: values.entryDate,
+      entryDate: values.entryDate.subtract(3, 'hours'),
       licensePlate: values.licensePlate,
       model: values.model,
       brand: values.brand,
@@ -47,8 +44,32 @@ export default function ModalCreateAndUpdateParking({
     await api
       .post('api/Parking', objectCreateParking)
       .then(({ data }) => {
-        console.log(data);
+        setUpdateTable(!UpdateTable);
+        form.resetFields();
         setLoading(false);
+        setOpenModal(false);
+      })
+      .catch((e) => console.log(e));
+  };
+
+  const onUpdateParking = async () => {
+    setLoading(true);
+    const values = form.getFieldsValue();
+    const objectCreateParking = {
+      entryDate: values.entryDate.subtract(3, 'hours'),
+      licensePlate: values.licensePlate,
+      departureDate: values.departureDate.subtract(3, 'hours'),
+      model: values.model,
+      brand: values.brand,
+      color: values.color,
+    };
+    await api
+      .put('api/Parking', objectCreateParking)
+      .then(() => {
+        form.resetFields();
+        setUpdateTable(!UpdateTable);
+        setLoading(false);
+        setOpenModal(false);
       })
       .catch((e) => console.log(e));
   };
@@ -64,7 +85,7 @@ export default function ModalCreateAndUpdateParking({
       <Form
         form={form}
         disabled={loading}
-        onFinish={onFinish}
+        onFinish={UpdateParking ? onUpdateParking : onFinish}
         layout="vertical"
       >
         <Row gutter={[24]}>
@@ -83,9 +104,8 @@ export default function ModalCreateAndUpdateParking({
             </Form.Item>
           </Col>
 
-          <Col span={24} style={{ display: 'flex', alignItems: 'center' }}>
+          <Col span={24}>
             <Form.Item
-              style={{ display: 'flex', alignItems: 'center' }}
               label="EntryDate"
               name="entryDate"
               rules={[
@@ -95,56 +115,38 @@ export default function ModalCreateAndUpdateParking({
                 },
               ]}
             >
-              <DatePicker style={{ width: '50%' }} />
-              <TimePicker style={{ width: '50%' }} />
-            </Form.Item>
-          </Col>
-
-          <Col span={24}>
-            <Form.Item
-              label="Model"
-              name="model"
-              rules={[
-                {
-                  required: true,
-                  message: 'Please input your Model!',
-                },
-              ]}
-            >
-              <Input />
-            </Form.Item>
-          </Col>
-
-          <Col span={24}>
-            <Form.Item
-              label="Brand"
-              name="brand"
-              rules={[
-                {
-                  required: true,
-                  message: 'Please input your Brand!',
-                },
-              ]}
-            >
-              <Input />
-            </Form.Item>
-          </Col>
-
-          <Col span={24}>
-            <Form.Item
-              label="Color"
-              name="color"
-              rules={[
-                {
-                  required: true,
-                  message: 'Please input your Color!',
-                },
-              ]}
-            >
-              <Input />
+              <DatePicker
+                locale={locale}
+                showTime
+                format="DD-MM-YYYY HH:mm:ss"
+              />
             </Form.Item>
           </Col>
         </Row>
+
+        {UpdateParking && (
+          <>
+            <Col span={24}>
+              <Form.Item
+                label="DepartureDate"
+                name="departureDate"
+                rules={[
+                  {
+                    required: true,
+                    message: 'Please input your departureDate!',
+                  },
+                ]}
+              >
+                <DatePicker showTime format="DD-MM-YYYY HH:mm:ss" />
+              </Form.Item>
+            </Col>
+
+            <Button type="primary" onClick={() => deleteParking()}>
+              Delete
+            </Button>
+          </>
+        )}
+
         <Button type="primary" htmlType="submit">
           Send
         </Button>

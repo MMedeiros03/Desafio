@@ -35,11 +35,17 @@ public class ParkingService : IParkingService
         return await _repository.GetDbSet().FirstOrDefaultAsync(vehicle => vehicle.LicensePlate == licensePlate && vehicle.DeleteDate == null);
     }
 
+    private async Task<Parking> GetByLicensePlateActive(string licensePlate)
+    {
+        return await _repository.GetDbSet().FirstOrDefaultAsync(vehicle => vehicle.LicensePlate == licensePlate && vehicle.DepartureDate != null && vehicle.DeleteDate == null);
+    }
+
     public async Task<Parking> PostAsync(Parking entity)
     {
         bool currentPrice = await _priceService.GetPriceIsValid(entity.EntryDate);
         if (currentPrice == false) throw new Exception("Este valor não é mais aplicável para essa data de entrada.");
-
+        var currentVehicle = await GetByLicensePlateActive(entity.LicensePlate);
+        if (currentVehicle != null) throw new Exception("Ja existe um veiculo cadastrado com a placa informada.");
         return await _repository.PostAsync(entity);
     }
 
@@ -59,8 +65,15 @@ public class ParkingService : IParkingService
 
         decimal amoutToPay = _utils.CalculateAmountToPay(lenghOfStay, price);
 
+        TimeSpan time = TimeSpan.FromMinutes(lenghOfStay);
+
+        var chargedTime = _utils.ValidateLenghOfStay(time);
+
         currentVehicle.AmountCharged = amoutToPay;
         currentVehicle.DepartureDate = entity.DepartureDate;
+        currentVehicle.LenghOfStay = TimeSpan.FromHours(lenghOfStay);
+        currentVehicle.ChargedTime = chargedTime;
+        currentVehicle.PriceCharged = price.InitialTimeValue;
 
         return await _repository.PutAsync(currentVehicle);
     }
