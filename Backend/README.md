@@ -35,4 +35,4 @@ O sistema esta dividido em três soluções:
       da forma esperada no sistema.
       
 # Agradecimentos
-Agradeço desde já a oportunidade :)
+Agradeço desde já pela oportunidade :)
