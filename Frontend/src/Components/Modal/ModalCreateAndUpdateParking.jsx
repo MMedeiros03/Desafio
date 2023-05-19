@@ -2,8 +2,16 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable import/no-extraneous-dependencies */
 import React, { useState } from 'react';
-import { Modal, Form, Row, Input, DatePicker, Button, Col } from 'antd';
-import dayjs from 'dayjs';
+import {
+  Modal,
+  Form,
+  Row,
+  Input,
+  DatePicker,
+  message,
+  Button,
+  Col,
+} from 'antd';
 import locale from 'antd/es/date-picker/locale/pt_BR';
 
 import { api } from '../../Services/HttpHandler';
@@ -30,6 +38,7 @@ export default function ModalCreateAndUpdateParking({
         console.log(e);
       });
   };
+
   form.setFieldsValue(UpdateParking);
 
   const onFinish = async (values) => {
@@ -43,13 +52,17 @@ export default function ModalCreateAndUpdateParking({
     };
     await api
       .post('api/Parking', objectCreateParking)
-      .then(({ data }) => {
+      .then(() => {
         setUpdateTable(!UpdateTable);
         form.resetFields();
         setLoading(false);
         setOpenModal(false);
+        message.success('Criado com sucesso!');
       })
-      .catch((e) => console.log(e));
+      .catch(({ response }) => {
+        message.error(response?.data?.Message);
+        setLoading(false);
+      });
   };
 
   const onUpdateParking = async () => {
@@ -67,11 +80,14 @@ export default function ModalCreateAndUpdateParking({
       .put('api/Parking', objectCreateParking)
       .then(() => {
         form.resetFields();
+        message.success('Atualizado com sucesso!');
         setUpdateTable(!UpdateTable);
         setLoading(false);
         setOpenModal(false);
       })
-      .catch((e) => console.log(e));
+      .catch((e) => {
+        message.erro(e.message);
+      });
   };
 
   return (
@@ -116,9 +132,10 @@ export default function ModalCreateAndUpdateParking({
               ]}
             >
               <DatePicker
+                style={{ width: '100%' }}
                 locale={locale}
                 showTime
-                format="DD-MM-YYYY HH:mm:ss"
+                format="DD/MM/YYYY HH:mm:ss"
               />
             </Form.Item>
           </Col>
@@ -137,11 +154,15 @@ export default function ModalCreateAndUpdateParking({
                   },
                 ]}
               >
-                <DatePicker showTime format="DD-MM-YYYY HH:mm:ss" />
+                <DatePicker showTime format="DD/MM/YYYY HH:mm:ss" />
               </Form.Item>
             </Col>
 
-            <Button type="primary" onClick={() => deleteParking()}>
+            <Button
+              style={{ marginRight: 10 }}
+              type="primary"
+              onClick={() => deleteParking()}
+            >
               Delete
             </Button>
           </>

@@ -4,6 +4,7 @@ using DesafioBenner.Services;
 using DesafioBenner.Services.Interfaces;
 using Infrastructure.DataBase;
 using Infrastructure.DTO;
+using Infrastructure.Middlewares;
 using Infrastructure.Utils;
 using Microsoft.EntityFrameworkCore;
 
@@ -36,23 +37,43 @@ builder.Services.AddTransient<IPriceRepository, PriceRepository>();
 
 builder.Services.AddTransient<Utils>();
 
+// Conexão com o banco
+#if TEST
 builder.Services.AddDbContext<Context>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DesafioBenner"),
-    sqlServerOptionsAction: sqlOptions =>
-    {
-        sqlOptions.EnableRetryOnFailure(
-            maxRetryCount: 5,
-            maxRetryDelay: TimeSpan.FromSeconds(30),
-            errorNumbersToAdd: null);
-    }));
+        options.UseSqlServer(builder.Configuration.GetConnectionString("DesafioBennerTest"),
+        sqlServerOptionsAction: sqlOptions =>
+        {
+            sqlOptions.EnableRetryOnFailure(
+                maxRetryCount: 5,
+                maxRetryDelay: TimeSpan.FromSeconds(30),
+                errorNumbersToAdd: null);
+        }));
+#else
+builder.Services.AddDbContext<Context>(options =>
+        options.UseSqlServer(builder.Configuration.GetConnectionString("DesafioBenner"),
+        sqlServerOptionsAction: sqlOptions =>
+        {
+            sqlOptions.EnableRetryOnFailure(
+                maxRetryCount: 5,
+                maxRetryDelay: TimeSpan.FromSeconds(30),
+                errorNumbersToAdd: null);
+        }));
+#endif
 
 var app = builder.Build();
 
 using (IServiceScope scope = app.Services.CreateScope())
 {
     Context context = scope.ServiceProvider.GetRequiredService<Context>();
-
+#if !TEST
     context.Database.EnsureCreated();
+#elif TEST
+    if (!context.Database.EnsureCreated())
+    {
+        context.Database.EnsureDeleted();
+        context.Database.EnsureCreated();
+    }
+#endif
 }
 
 app.UseCors("MyPolicy");
@@ -63,6 +84,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseMiddleware<MiddlewareError>();
 
 app.UseHttpsRedirection();
 

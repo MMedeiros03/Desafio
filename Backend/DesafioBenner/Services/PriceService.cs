@@ -19,17 +19,11 @@ namespace DesafioBenner.Services
             return await _repository.GetAllAsync();
         }
 
-        public async Task<bool> GetPriceIsValid(DateTime entryDate)
+     
+        public async Task<dynamic> GetPriceInPeriodAsync(DateTime initialDate, DateTime ?finalDate)
         {
-            Price validPrice = await _repository.GetDbSet().FirstOrDefaultAsync(pr => pr.InitialDate <= entryDate && pr.FinalDate >= entryDate && pr.DeleteDate == null);
-            if (validPrice != null)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            Price validPrice = await _repository.GetDbSet().FirstOrDefaultAsync(pr => pr.InitialDate <= initialDate && pr.FinalDate >= (finalDate ?? initialDate) && pr.DeleteDate == null);
+            return validPrice;
         }
 
         public async Task<Price> GetByIdAsync(long id)
@@ -39,6 +33,8 @@ namespace DesafioBenner.Services
 
         public async Task<Price> PostAsync(Price entity)
         {
+            dynamic existPrice = await GetPriceInPeriodAsync(entity.InitialDate, entity.FinalDate);
+            if (existPrice != null) throw new BadHttpRequestException("Ja existe uma tabela de preço vigente nesse periodo"); 
             return await _repository.PostAsync(entity);
         }
 

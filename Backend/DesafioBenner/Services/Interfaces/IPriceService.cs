@@ -8,7 +8,7 @@ public interface IPriceService
 
     Task<Price> GetByIdAsync(long id); 
 
-    Task<bool> GetPriceIsValid(DateTime entryDate);
+    Task<dynamic> GetPriceInPeriodAsync(DateTime entryDate, DateTime ?finalDate);
 
     Task<Price> PostAsync(Price entity);
 

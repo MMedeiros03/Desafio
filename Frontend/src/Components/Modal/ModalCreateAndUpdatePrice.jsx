@@ -11,34 +11,21 @@ import {
   Button,
   Col,
   InputNumber,
+  message,
 } from 'antd';
 import dayjs from 'dayjs';
 import locale from 'antd/es/date-picker/locale/pt_BR';
 import { api } from '../../Services/HttpHandler';
 
-export default function ModalCreateAndUpdatePrice({ open, setOpenModal }) {
+export default function ModalCreateAndUpdatePrice({
+  open,
+  setOpenModal,
+  setUpdateTable,
+  udpdateTable,
+  UpdatePrice = false,
+}) {
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
-  const [price, setprice] = useState(false);
-
-  const getPrice = async () => {
-    await api
-      .get('api/Price?id=1')
-      .then(({ data }) => {
-        setprice(true);
-        form.setFieldsValue({
-          ...data,
-          initialDate: data?.initialDate ? dayjs(data?.initialDate) : '',
-          finalDate: data?.finalDate ? dayjs(data?.finalDate) : '',
-        });
-      })
-      .catch(({ response }) => {
-        if (response.status === 500) {
-          setprice(false);
-          form.setFieldsValue();
-        }
-      });
-  };
 
   const onFinish = async (values) => {
     setLoading(true);
@@ -59,9 +46,17 @@ export default function ModalCreateAndUpdatePrice({ open, setOpenModal }) {
         });
         setLoading(false);
         setOpenModal(false);
+        form.resetFields();
+        setUpdateTable(!udpdateTable);
+        message.success('Tabela de preço criada com sucesso!');
       })
-      .catch((e) => console.log(e));
+      .catch(({ response }) => {
+        message.error(response?.data?.Message);
+        setLoading(false);
+      });
   };
+
+  form.setFieldsValue(UpdatePrice);
 
   const onUpdatePrice = async () => {
     setLoading(true);
@@ -82,15 +77,17 @@ export default function ModalCreateAndUpdatePrice({ open, setOpenModal }) {
           initialDate: data?.initialDate ? dayjs(data?.initialDate) : '',
           finalDate: data?.finalDate ? dayjs(data?.finalDate) : '',
         });
+        message.success('Tabela de preço atualizada com sucesso!');
         setLoading(false);
+        form.resetFields();
         setOpenModal(false);
+        setUpdateTable(!udpdateTable);
       })
-      .catch((e) => console.log(e));
+      .catch(({ response }) => {
+        message.error(response?.data?.Message);
+        setLoading(false);
+      });
   };
-
-  useEffect(() => {
-    getPrice();
-  }, []);
 
   return (
     <Modal
@@ -103,7 +100,7 @@ export default function ModalCreateAndUpdatePrice({ open, setOpenModal }) {
       <Form
         form={form}
         disabled={loading}
-        onFinish={price ? onUpdatePrice : onFinish}
+        onFinish={UpdatePrice ? onUpdatePrice : onFinish}
         layout="vertical"
       >
         <Row gutter={[24]}>
@@ -121,7 +118,8 @@ export default function ModalCreateAndUpdatePrice({ open, setOpenModal }) {
               <DatePicker
                 locale={locale}
                 showTime
-                format="DD-MM-YYYY HH:mm:ss"
+                style={{ width: '100%' }}
+                format="DD/MM/YYYY HH:mm:ss"
               />
             </Form.Item>
           </Col>
@@ -140,13 +138,15 @@ export default function ModalCreateAndUpdatePrice({ open, setOpenModal }) {
               <DatePicker
                 locale={locale}
                 showTime
-                format="DD-MM-YYYY HH:mm:ss"
+                style={{ width: '100%' }}
+                format="DD/MM/YYYY HH:mm:ss"
               />
             </Form.Item>
           </Col>
 
           <Col span={24}>
             <Form.Item
+              initialValue={60}
               label="Hora Inicial (em minutos)"
               name="initialTime"
               rules={[
@@ -156,7 +156,7 @@ export default function ModalCreateAndUpdatePrice({ open, setOpenModal }) {
                 },
               ]}
             >
-              <InputNumber />
+              <InputNumber disabled style={{ width: '100%' }} />
             </Form.Item>
           </Col>
 
@@ -171,7 +171,7 @@ export default function ModalCreateAndUpdatePrice({ open, setOpenModal }) {
                 },
               ]}
             >
-              <InputNumber />
+              <InputNumber style={{ width: '100%' }} />
             </Form.Item>
           </Col>
 
@@ -186,7 +186,7 @@ export default function ModalCreateAndUpdatePrice({ open, setOpenModal }) {
                 },
               ]}
             >
-              <InputNumber />
+              <InputNumber style={{ width: '100%' }} />
             </Form.Item>
           </Col>
         </Row>

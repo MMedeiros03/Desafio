@@ -3,6 +3,20 @@
   margin: 0;
 }
 
+.ant-table-row{
+  cursor: pointer;
+}
+
+body{
+  background-color:#b2b4b6 ;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
 
 .App {
   text-align: center;

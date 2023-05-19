@@ -9,4 +9,13 @@ public class Context : DbContext
     public DbSet<Price> Prices { get; set; }
     public DbSet<Parking> Parkings { get; set; }
 
+    protected override void OnModelCreating(ModelBuilder builder)
+    {
+#if TEST
+        SeedTest.OnModelCreating(builder);
+#else
+        base.OnModelCreating(builder);
+#endif
+    }
+
 }

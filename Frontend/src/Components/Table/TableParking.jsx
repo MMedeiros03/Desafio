@@ -21,15 +21,21 @@ export default function TableListParking({
         key: element?.id,
         licenseplate: element?.licensePlate,
         entryDate: element?.entryDate
-          ? dayjs(element?.entryDate).format('DD-MM-YYYY HH:mm:ss')
+          ? dayjs(element?.entryDate).format('DD/MM/YYYY HH:mm:ss')
           : '',
         departureDate: element?.departureDate
-          ? dayjs(element?.departureDate).format('DD-MM-YYYY HH:mm:ss')
+          ? dayjs(element?.departureDate).format('DD/MM/YYYY HH:mm:ss')
           : '',
         lenghOfStay: element?.lenghOfStay,
-        chargedTime: element?.chargedTime,
-        priceCharged: element?.priceCharged,
-        amountToPay: element?.amountCharged,
+        chargedTime: element?.chargedTime
+          ? `${element?.chargedTime} horas`
+          : '',
+        priceCharged: element?.priceCharged
+          ? `R$ ${element?.priceCharged}`
+          : '',
+        amountToPay: element?.amountCharged
+          ? `R$ ${element?.amountCharged}`
+          : '',
       });
     });
     return listObjects;
@@ -52,39 +58,46 @@ export default function TableListParking({
 
   const columns = [
     {
-      title: 'LicensePlate',
+      title: 'Placa',
       dataIndex: 'licenseplate',
       key: 'licensePlate',
+      align: 'center',
     },
     {
-      title: 'EntryDate',
+      title: 'Data de Entrada',
       dataIndex: 'entryDate',
       key: 'entryDate',
+      align: 'center',
     },
     {
-      title: 'DepartureDate',
+      title: 'Data de Saída',
       dataIndex: 'departureDate',
       key: 'departureDate',
+      align: 'center',
     },
     {
-      title: 'LenghOfStay',
+      title: 'Duração',
       dataIndex: 'lenghOfStay',
       key: 'lenghOfStay',
+      align: 'center',
     },
     {
-      title: 'ChargedTime',
+      title: 'Tempo Cobrado',
       dataIndex: 'chargedTime',
       key: 'chargedTime',
+      align: 'center',
     },
     {
-      title: 'Price',
+      title: 'Preço',
       dataIndex: 'priceCharged',
       key: 'priceCharged',
+      align: 'center',
     },
     {
-      title: 'AmountToPay',
+      title: 'Valor a Pagar',
       dataIndex: 'amountToPay',
       key: 'amountToPay',
+      align: 'center',
     },
   ];
 
@@ -95,6 +108,7 @@ export default function TableListParking({
   return (
     <>
       <Table
+        scroll={{ y: 300 }}
         pagination={false}
         onRow={(e) => ({
           onDoubleClick: async () => {
