@@ -59,7 +59,7 @@ public class ParkingService : IParkingService
     {
         dynamic currentPrice = await _priceService.GetPriceInPeriodAsync(entity.EntryDate,null);
 
-        if (currentPrice == null) throw new BadHttpRequestException("Este valor não é mais aplicável para essa data de entrada.");
+        if (currentPrice == null) throw new KeyNotFoundException("Não existe tabela de preço vigente para essa data de entreda.");
 
         var currentVehicle = await GetByLicensePlateActive(entity.LicensePlate);
 
@@ -76,13 +76,14 @@ public class ParkingService : IParkingService
     {
         var currentVehicle = await GetByLicensePlate(entity.LicensePlate);
 
+        if (currentVehicle == null) throw new KeyNotFoundException("Veiculo não foi encontrado");
+
         dynamic currentPrice = await _priceService.GetPriceInPeriodAsync(currentVehicle.EntryDate, entity.DepartureDate);
 
         string validateDays = "";
 
-        if (currentPrice == null) throw new BadHttpRequestException("Este valor não é mais aplicável para essa data de saida.");
+        if (currentPrice == null) throw new KeyNotFoundException("Este não existe tabela de preço vigente aplicável para essa data de saida.");
 
-        if (currentVehicle == null) throw new KeyNotFoundException("Veiculo não foi encontrado");
 
         var lenghOfStay = _utils.CalculateLenghtOfStay(currentVehicle.EntryDate, entity.DepartureDate);
 

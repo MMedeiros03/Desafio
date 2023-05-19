@@ -1,8 +1,8 @@
-﻿using System.Net;
-using Infrastructure.DTO;
+﻿using Infrastructure.DTO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Newtonsoft.Json;
+using System.Net;
 
 namespace Infrastructure.Middlewares;
 

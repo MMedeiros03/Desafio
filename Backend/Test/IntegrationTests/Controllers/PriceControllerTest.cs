@@ -42,6 +42,21 @@ public class PriceControllerTest
     }
 
     /// <summary>
+    /// Testa o método GetByIdPriceAsync para retornar um erro caso 
+    /// o id informado não exista. Verifica se a requisição retorna status NotFound e 
+    /// valida se o retorno não é nulo.
+    /// </summary>
+    [Fact]
+    public async Task GetByIdPriceAsync_ReturnsNotFound()
+    {
+        var response = await HttpHandler.SendRequest("Price?id=12312", "", "GET");
+        var responseContent = await response.Content.ReadAsStringAsync();
+        var priceResponse = JsonConvert.DeserializeObject<Price>(responseContent);
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        Assert.NotNull(priceResponse);
+    }
+
+    /// <summary>
     /// Testa o método PostPriceAsync para criar um novo registro.
     /// Verifica se a requisição retorna status Ok,
     /// valida se o retorno não é nulo e valida  se o valor retornado é do tipo Price.
@@ -63,6 +78,32 @@ public class PriceControllerTest
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.IsType<Price>(priceResponse);
+        Assert.NotNull(priceResponse);
+    }
+
+    /// <summary>
+    /// Testa o método PutPriceAsync para criar um registro que esteja 
+    /// no periodo de vigencia de outra tabela de preço.
+    /// Verifica se a requisição retorna status InternalServerError,
+    /// valida se o retorno não é nulo.
+    /// </summary>
+
+    [Fact]
+    public async Task PostPriceAsync_ReturnsInternalError()
+    {
+        Price newPrice = new Price()
+        {
+            InitialDate = DateTime.Now,
+            FinalDate = DateTime.Now.AddDays(5),
+            InitialTime = 60,
+            InitialTimeValue = 6,
+            AdditionalHourlyValue = 2,
+        };
+        var response = await HttpHandler.SendRequest("Price", newPrice, "POST");
+        var responseContent = await response.Content.ReadAsStringAsync();
+        var priceResponse = JsonConvert.DeserializeObject<Price>(responseContent);
+
+        Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
         Assert.NotNull(priceResponse);
     }
 
@@ -101,11 +142,27 @@ public class PriceControllerTest
     [Fact]
     public async Task DeletePriceAsync_ReturnsOk()
     {
-        var response = await HttpHandler.SendRequest("Price?id=3", "", "DELETE");
+        var response = await HttpHandler.SendRequest("Price?id=4", "", "DELETE");
         var responseContent = await response.Content.ReadAsStringAsync();
         var priceResponse = JsonConvert.DeserializeObject<Price>(responseContent);
 
+        Assert.NotNull(priceResponse);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.IsType<Price>(priceResponse);
+    }
+
+    /// <summary>
+    /// Testa o método DeletePriceAsync para excuir um registro que não existe no banco.
+    /// Verifica se a requisição retorna status NotFoud e
+    /// valida se o valor retornado não é nulo
+    /// </summary>
+    [Fact]
+    public async Task DeletePriceAsync_ReturnsNotFound()
+    {
+        var response = await HttpHandler.SendRequest("Price?id=123123", "", "DELETE");
+        var responseContent = await response.Content.ReadAsStringAsync();
+        var priceResponse = JsonConvert.DeserializeObject<Price>(responseContent);
+
+        Assert.NotNull(priceResponse);
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
 }

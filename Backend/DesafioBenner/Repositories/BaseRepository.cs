@@ -70,7 +70,7 @@ public abstract class BaseRepository<T> : IBaseRepository<T> where T : class, IB
     {
         dynamic result = await _context.Set<T>().FindAsync(id);
 
-        if (result == null || result.DeleteDate != null)
+        if (result == null)
         {
             throw new KeyNotFoundException("Registro não encontrado!");
         }
