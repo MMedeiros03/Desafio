@@ -70,7 +70,7 @@ public class ParkingControllerTest
         Parking newParking = new Parking()
         {
             EntryDate = DateTime.Now.AddHours(5),
-            LicensePlate = "POST-3125"
+            LicensePlate = "POST-3128"
         };
         var response = await HttpHandler.SendRequest("Parking", newParking, "POST");
         var responseContent = await response.Content.ReadAsStringAsync();
