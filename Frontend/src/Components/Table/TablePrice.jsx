@@ -88,7 +88,7 @@ export default function TableListPrice({
   return (
     <>
       <Table
-        style={{ marginBottom: 50 }}
+        style={{ marginBottom: 50, width: '50%' }}
         scroll={{ y: 300 }}
         pagination={false}
         onRow={(e) => ({

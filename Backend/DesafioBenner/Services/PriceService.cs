@@ -20,10 +20,9 @@ namespace DesafioBenner.Services
         }
 
      
-        public async Task<dynamic> GetPriceInPeriodAsync(DateTime initialDate, DateTime ?finalDate)
+        public async Task<Price> GetPriceInPeriodAsync(DateTime initialDate, DateTime ?finalDate)
         {
-            Price validPrice = await _repository.GetDbSet().FirstOrDefaultAsync(pr => pr.InitialDate <= initialDate && pr.FinalDate >= (finalDate ?? initialDate) && pr.DeleteDate == null);
-            return validPrice;
+            return  await _repository.GetDbSet().FirstOrDefaultAsync(pr => pr.InitialDate <= initialDate && pr.FinalDate >= (finalDate ?? initialDate) && pr.DeleteDate == null);
         }
 
         public async Task<Price> GetByIdAsync(long id)

@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react/prop-types */
 import { Table } from 'antd';
@@ -17,6 +18,14 @@ export default function TableListParking({
   const getAllParking = () => {
     const listObjects = [];
     contentList?.forEach((element) => {
+      let difference = 0;
+      if (element.departureDate) {
+        const entryDate = dayjs(element?.entryDate);
+        const departureDate = dayjs(element?.departureDate);
+
+        difference = departureDate.diff(entryDate, 'hour');
+      }
+
       listObjects.push({
         key: element?.id,
         licenseplate: element?.licensePlate,
@@ -27,9 +36,12 @@ export default function TableListParking({
           ? dayjs(element?.departureDate).format('DD/MM/YYYY HH:mm:ss')
           : '',
         lenghOfStay: element?.lenghOfStay,
-        chargedTime: element?.chargedTime
-          ? `${element?.chargedTime} horas`
-          : '',
+        chargedTime:
+          element?.chargedTime && difference >= 1
+            ? `${element?.chargedTime} horas`
+            : element?.chargedTime
+            ? `${element?.chargedTime} minutos`
+            : '',
         priceCharged: element?.priceCharged
           ? `R$ ${element?.priceCharged}`
           : '',

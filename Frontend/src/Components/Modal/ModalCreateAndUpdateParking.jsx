@@ -46,9 +46,6 @@ export default function ModalCreateAndUpdateParking({
     const objectCreateParking = {
       entryDate: values.entryDate.subtract(3, 'hours'),
       licensePlate: values.licensePlate,
-      model: values.model,
-      brand: values.brand,
-      color: values.color,
     };
     await api
       .post('api/Parking', objectCreateParking)
@@ -72,9 +69,6 @@ export default function ModalCreateAndUpdateParking({
       entryDate: values.entryDate.subtract(3, 'hours'),
       licensePlate: values.licensePlate,
       departureDate: values.departureDate.subtract(3, 'hours'),
-      model: values.model,
-      brand: values.brand,
-      color: values.color,
     };
     await api
       .put('api/Parking', objectCreateParking)
@@ -85,8 +79,9 @@ export default function ModalCreateAndUpdateParking({
         setLoading(false);
         setOpenModal(false);
       })
-      .catch((e) => {
-        message.erro(e.message);
+      .catch(({ response }) => {
+        message.error(response.data.Message);
+        setLoading(false);
       });
   };
 

@@ -31,14 +31,18 @@ public class Utils
         else
         {
             decimal valueToPay = (decimal)lengthOfStay * price.InitialTimeValue / (decimal)price.InitialTime;
+
+            TimeSpan time = TimeSpan.FromMinutes(lengthOfStay);
+
             double toleranceInMinutes = Math.Abs(price.InitialTime - lengthOfStay);
-            if (toleranceInMinutes > 10)
+
+            if (time.Minutes > 10)
             {
-                return Math.Round(valueToPay + price.AdditionalHourlyValue,2);
+                return Math.Round(valueToPay + price.AdditionalHourlyValue, 2);
             }
             else
             {
-                return Math.Round(valueToPay,2);
+                return Math.Round(valueToPay, 2);
             }
         }
     }
@@ -48,24 +52,18 @@ public class Utils
     /// </summary>
     /// <param name="time">Tempo de permanencia.</param>
     /// <returns>O tempo cobrado em horas.</returns>
-    public decimal ValidateLenghOfStay(TimeSpan time)
+    public decimal ValidateHoursLengthOfStay(TimeSpan time)
     {
-        if(time.Hours == 0 && time.Minutes >= 1)
+        if (time.Days == 0)
         {
-            return 30;
+            return time.Hours;
         }
         else
         {
-            if (time.Days == 0)
-            {
-                return time.Hours;
-            }
-            else
-            {
-                var hoursByDays = time.Days * 24;
-                return time.Hours * hoursByDays;
-            }
+            var hoursByDays = time.Days * 24;
+            return time.Hours + hoursByDays;
         }
+
     }
 
 }

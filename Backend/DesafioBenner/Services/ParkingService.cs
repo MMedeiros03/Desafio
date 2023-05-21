@@ -41,7 +41,7 @@ public class ParkingService : IParkingService
     /// </summary>
     private async Task<Parking> GetByLicensePlate(string licensePlate)
     {
-        return await _repository.GetDbSet().FirstOrDefaultAsync(vehicle => vehicle.LicensePlate == licensePlate && vehicle.DeleteDate == null);
+        return await _repository.GetDbSet().FirstOrDefaultAsync(vehicle => vehicle.LicensePlate == licensePlate && vehicle.DepartureDate == null && vehicle.DeleteDate == null);
     }
 
     /// <summary>
@@ -57,7 +57,7 @@ public class ParkingService : IParkingService
     /// </summary>
     public async Task<Parking> PostAsync(Parking entity)
     {
-        dynamic currentPrice = await _priceService.GetPriceInPeriodAsync(entity.EntryDate,null);
+        dynamic currentPrice = await _priceService.GetPriceInPeriodAsync(entity.EntryDate, null);
 
         if (currentPrice == null) throw new KeyNotFoundException("Não existe tabela de preço vigente para essa data de entreda.");
 
@@ -82,8 +82,7 @@ public class ParkingService : IParkingService
 
         string validateDays = "";
 
-        if (currentPrice == null) throw new KeyNotFoundException("Este não existe tabela de preço vigente aplicável para essa data de saida.");
-
+        if (currentPrice == null) throw new KeyNotFoundException("Não existe tabela de preço vigente aplicável para essa data de saida.");
 
         var lenghOfStay = _utils.CalculateLenghtOfStay(currentVehicle.EntryDate, entity.DepartureDate);
 
@@ -91,12 +90,26 @@ public class ParkingService : IParkingService
 
         TimeSpan time = TimeSpan.FromMinutes(lenghOfStay);
 
-        var chargedTime = _utils.ValidateLenghOfStay(time);
+        var chargedTime = _utils.ValidateHoursLengthOfStay(time);
 
         currentVehicle.AmountCharged = amountToPay;
         currentVehicle.DepartureDate = entity.DepartureDate;
-        currentVehicle.LenghOfStay = $"{chargedTime}:{time.Minutes}:{time.Seconds}";
-        currentVehicle.ChargedTime = chargedTime;
+        currentVehicle.LenghOfStay = $"{chargedTime} horas e {time.Minutes} minutos e {time.Seconds} segundos";
+        if (time.Days == 0 && time.Hours == 0 && time.Minutes <= 30)
+        {
+            currentVehicle.ChargedTime = 30;
+        }
+        else
+        {
+            if (time.Minutes <= 10)
+            {
+                currentVehicle.ChargedTime = chargedTime;
+            }
+            else
+            {
+                currentVehicle.ChargedTime = chargedTime + 1;
+            }
+        }
         currentVehicle.PriceCharged = currentPrice.InitialTimeValue;
 
         return await _repository.PutAsync(currentVehicle);

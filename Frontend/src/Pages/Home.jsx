@@ -41,6 +41,9 @@ export default function Home() {
     await api
       .get('api/Price')
       .then(({ data }) => {
+        if (!data.lenght === 0) {
+          showModalPrice();
+        }
         setDataSourcePrice(data);
       })
       .catch(() => {
