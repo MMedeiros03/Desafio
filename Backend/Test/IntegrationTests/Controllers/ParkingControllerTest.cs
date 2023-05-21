@@ -133,7 +133,7 @@ public class ParkingControllerTest
     {
         ParkingDepartureDTO dtoParking = new ParkingDepartureDTO()
         {
-             LicensePlate = "ABC-1234",
+             LicensePlate = "GHI-8910",
              DepartureDate = DateTime.Now.AddHours(3)
         };
 
