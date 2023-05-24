@@ -34,9 +34,7 @@ public class Utils
 
             TimeSpan time = TimeSpan.FromMinutes(lengthOfStay);
 
-            double toleranceInMinutes = Math.Abs(price.InitialTime - lengthOfStay);
-
-            if (time.Minutes > 10)
+            if (time.Minutes > 10) // verifica o tempo da tolerância 
             {
                 return Math.Round(valueToPay + price.AdditionalHourlyValue, 2);
             }

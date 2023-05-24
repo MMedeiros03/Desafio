@@ -47,21 +47,13 @@ public class ParkingService : IParkingService
     /// <summary>
     /// Busca se existe um veiculo estacionado no momento pelo numero da placa
     /// </summary>
-    private async Task<Parking> GetByLicensePlateActive(string licensePlate)
-    {
-        return await _repository.GetDbSet().FirstOrDefaultAsync(vehicle => vehicle.LicensePlate == licensePlate && vehicle.DepartureDate == null && vehicle.DeleteDate == null);
-    }
-
-    /// <summary>
-    /// Busca se existe um veiculo estacionado no momento pelo numero da placa
-    /// </summary>
     public async Task<Parking> PostAsync(Parking entity)
     {
         dynamic currentPrice = await _priceService.GetPriceInPeriodAsync(entity.EntryDate, null);
 
-        if (currentPrice == null) throw new KeyNotFoundException("Não existe tabela de preço vigente para essa data de entreda.");
+        if (currentPrice == null) throw new KeyNotFoundException("Não existe tabela de preço vigente para essa data de entrada.");
 
-        var currentVehicle = await GetByLicensePlateActive(entity.LicensePlate);
+        var currentVehicle = await GetByLicensePlate(entity.LicensePlate);
 
         if (currentVehicle != null) throw new BadHttpRequestException("Ja existe um veiculo cadastrado com a placa informada.");
 
@@ -95,6 +87,7 @@ public class ParkingService : IParkingService
         currentVehicle.AmountCharged = amountToPay;
         currentVehicle.DepartureDate = entity.DepartureDate;
         currentVehicle.LenghOfStay = $"{chargedTime} horas e {time.Minutes} minutos e {time.Seconds} segundos";
+
         if (time.Days == 0 && time.Hours == 0 && time.Minutes <= 30)
         {
             currentVehicle.ChargedTime = 30;
